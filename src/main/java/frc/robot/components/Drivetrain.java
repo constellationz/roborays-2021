@@ -3,6 +3,7 @@ package frc.robot.components;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import frc.functions.DrivetrainSpeed;
 import frc.DrivetrainConfig;
 import java.lang.Math;
@@ -13,12 +14,20 @@ public class Drivetrain {
   private TalonSRX FrontRightMotor;
   private TalonSRX BackLeftMotor;
   private TalonSRX BackRightMotor;
+  // used for getSelectedSensorVelocity functions
+  private final WPI_TalonFX FalconLeft;
+  private final WPI_TalonFX FalconRight;
 
   public Drivetrain() {
     FrontLeftMotor = new TalonSRX(CAN.FRONT_LEFT);
     FrontRightMotor = new TalonSRX(CAN.FRONT_RIGHT);   
     BackLeftMotor = new TalonSRX(CAN.BACK_LEFT);   
     BackRightMotor = new TalonSRX(CAN.BACK_RIGHT);   
+
+    // TODO: possibly use all four encoders to reduce noise
+    // TODO: set FeedbackDevice in CTRE Lifeboat before using
+    FalconLeft = new WPI_TalonFX(CAN.FRONT_LEFT);
+    FalconRight= new WPI_TalonFX(CAN.FRONT_RIGHT);
 
     // motor configuration
     TalonSRXConfiguration MotorConfiguration = 
@@ -45,23 +54,23 @@ public class Drivetrain {
   }
 
   public void directDriveLeft(double value) {
-    FrontLeftMotor.set(TalonSRXControlMode.PercentOutput, value);
-    BackLeftMotor.set(TalonSRXControlMode.PercentOutput, value);
+    FrontLeftMotor.set(TalonSRXControlMode.PercentOutput, -value);
+    BackLeftMotor.set(TalonSRXControlMode.PercentOutput, -value);
   }
 
   public void directDriveRight(double value) {
-    FrontRightMotor.set(TalonSRXControlMode.PercentOutput, -value);
-    BackRightMotor.set(TalonSRXControlMode.PercentOutput, -value);
+    FrontRightMotor.set(TalonSRXControlMode.PercentOutput, value);
+    BackRightMotor.set(TalonSRXControlMode.PercentOutput, value);
   }
 
   public void velocityDriveLeft(double value) {
-    FrontLeftMotor.set(TalonSRXControlMode.Velocity, value);
-    BackLeftMotor.set(TalonSRXControlMode.Velocity, value);
+    FrontLeftMotor.set(TalonSRXControlMode.Velocity, -value);
+    BackLeftMotor.set(TalonSRXControlMode.Velocity, -value);
   }
 
   public void velocityDriveRight(double value) {
-    FrontRightMotor.set(TalonSRXControlMode.Velocity, -value);
-    BackRightMotor.set(TalonSRXControlMode.Velocity, -value);
+    FrontRightMotor.set(TalonSRXControlMode.Velocity, value);
+    BackRightMotor.set(TalonSRXControlMode.Velocity, value);
   }
 
   // meters per second
@@ -90,13 +99,27 @@ public class Drivetrain {
     velocityDrive(DriveSpeed);
   }
 
+  public void CurvatureDrive(double forward, double turn) {
+    DrivetrainSpeed DriveSpeed = ComputeCurvatureDrive(forward, turn);
+    velocityDrive(DriveSpeed);
+  }
+
+  // gets forward speed in m/s
+  public double getForwardSpeed() {
+    double leftSpeed = -FalconLeft.getSelectedSensorVelocity();
+    double rightSpeed = FalconRight.getSelectedSensorVelocity();
+    // motor rpm divided by ground ratio
+    return (leftSpeed + rightSpeed) * 0.5 / DrivetrainConfig.GROUND_RATIO;
+  }
+
   private DrivetrainSpeed ComputeCurvatureDrive2(double forward, double turn) {
     // clamp for safety
     forward = clamp(forward, -1.0, 1.0);
     turn = clamp(turn, -1.0, 1.0);
 
+    double forwardSpeed = getForwardSpeed();
     double lowSpeedCharacter = clamp(
-      (DrivetrainConfig.HIGH_CRITICAL - forward)/DrivetrainConfig.DELTA_CRITICAL,
+      (DrivetrainConfig.HIGH_CRITICAL - forwardSpeed)/DrivetrainConfig.DELTA_CRITICAL,
       0.0, 1.0);
     double highSpeedCharacter = 1 - lowSpeedCharacter;
 

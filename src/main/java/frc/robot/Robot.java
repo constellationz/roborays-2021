@@ -93,11 +93,19 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double left = m_xboxController.getX(GenericHID.Hand.kLeft);
+    double turn = m_xboxController.getX(GenericHID.Hand.kLeft);
     double forward = m_xboxController.getY(GenericHID.Hand.kRight);
 
+    // testing code
+    // TODO: tune sensor control loops
     m_Drivetrain.directDriveLeft(forward);
     m_Drivetrain.directDriveRight(forward);
+
+    // test curvaturedrive
+    // m_DriveTrain.CurvatureDrive(forward, turn);
+
+    // ONLY USE WHEN READY!!!
+    // m_Drivetrain.CurvatureDrive2(forward, turn);
   }
 
   /** This function is called once when the robot is disabled. */
