@@ -24,7 +24,6 @@ public class Intake {
     IntakeMotor = new TalonSRX(CAN.INTAKE);
     ExtendoSolenoid = new DoubleSolenoid(
       IntakeConfig.EXTENDO_FORWARD_CHANNEL, IntakeConfig.EXTENDO_REVERSE_CHANNEL);
-    // TODO: remove if no compressor
     m_Compressor = new Compressor(IntakeConfig.COMPRESSOR_CHANNEL);
 
     TalonSRXConfiguration IntakeMotorConfig = 
@@ -71,16 +70,11 @@ public class Intake {
 
   // retracts pneumatics
   public void retract() {
-    ExtendoSolenoid.set(DoubleSolenoid.Value.kReverse);
+    // ExtendoSolenoid.set(DoubleSolenoid.Value.kReverse);
   }
 
   public void disableExtendo() {
     ExtendoSolenoid.set(DoubleSolenoid.Value.kOff);
-  }
-
-  // TODO: manage pneumatic system
-  public void managePneumatics() {
-    // this might not be needed
   }
 
 }
