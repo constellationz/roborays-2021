@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import frc.functions.DrivetrainSpeed;
+import frc.functions.util;
 import frc.DrivetrainConfig;
 import java.lang.Math;
 import frc.CAN;
@@ -46,11 +47,6 @@ public class Drivetrain {
   public void reset() {
     DrivetrainSpeed noSpeed = new DrivetrainSpeed(0.0, 0.0);
     directDrive(noSpeed);
-  }
-
-  // constrain value between minimum and maximum
-  private double clamp(double value, double min, double max) {
-    return Math.max(min, Math.min(max, value));
   }
 
   public void directDriveLeft(double value) {
@@ -114,11 +110,11 @@ public class Drivetrain {
 
   private DrivetrainSpeed ComputeCurvatureDrive2(double forward, double turn) {
     // clamp for safety
-    forward = clamp(forward, -1.0, 1.0);
-    turn = clamp(turn, -1.0, 1.0);
+    forward = util.clamp(forward, -1.0, 1.0);
+    turn = util.clamp(turn, -1.0, 1.0);
 
     double forwardSpeed = getForwardSpeed();
-    double lowSpeedCharacter = clamp(
+    double lowSpeedCharacter = util.clamp(
       (DrivetrainConfig.HIGH_CRITICAL - forwardSpeed)/DrivetrainConfig.DELTA_CRITICAL,
       0.0, 1.0);
     double highSpeedCharacter = 1 - lowSpeedCharacter;
@@ -133,30 +129,30 @@ public class Drivetrain {
 
   private DrivetrainSpeed ComputeBooleanConstrainedSkidSteer(double forward, double turn) {
     // clamp for safety
-    forward = clamp(forward, -1.0, 1.0);
-    turn = clamp(turn, -1.0, 1.0);
+    forward = util.clamp(forward, -1.0, 1.0);
+    turn = util.clamp(turn, -1.0, 1.0);
 
     double forwardPower = forward * DrivetrainConfig.FORWARD_SPEED;
     double turnPower = turn * DrivetrainConfig.TURN_SPEED;
 
-    double leftVelocity = clamp(forwardPower + turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
-    double rightVelocity = clamp(forwardPower - turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
+    double leftVelocity = util.clamp(forwardPower + turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
+    double rightVelocity = util.clamp(forwardPower - turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
 
     return new DrivetrainSpeed(leftVelocity, rightVelocity);
   }
 
   public DrivetrainSpeed ComputeCurvatureDrive(double forward, double turn) {
     // clamp for safety
-    forward = clamp(forward, -1.0, 1.0);
-    turn = clamp(turn, -1.0, 1.0);
+    forward = util.clamp(forward, -1.0, 1.0);
+    turn = util.clamp(turn, -1.0, 1.0);
 
     double turnScaled = turn * Math.abs(forward);
 
     double forwardPower = forward * DrivetrainConfig.FORWARD_SPEED;
     double turnPower = turnScaled * DrivetrainConfig.TURN_SPEED;
 
-    double leftVelocity = clamp(forwardPower + turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
-    double rightVelocity = clamp(forwardPower - turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
+    double leftVelocity = util.clamp(forwardPower + turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
+    double rightVelocity = util.clamp(forwardPower - turnPower, -DrivetrainConfig.MAX_SPEED, DrivetrainConfig.MAX_SPEED);
 
     return new DrivetrainSpeed(leftVelocity, rightVelocity);
   }

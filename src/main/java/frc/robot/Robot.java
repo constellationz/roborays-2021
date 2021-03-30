@@ -5,13 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.components.Drivetrain;
+import frc.robot.components.Conveyor;
+import frc.robot.components.Turret;
+import frc.robot.components.Intake;
 import frc.functions.DrivetrainSpeed;
 import frc.DrivetrainConfig;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID;
 
@@ -29,6 +31,9 @@ public class Robot extends TimedRobot {
 
   // robot components
   private Drivetrain m_Drivetrain = new Drivetrain();
+  private Conveyor m_Conveyor = new Conveyor();
+  private Intake m_Intake = new Intake();
+  private Turret m_Turret = new Turret();
   private XboxController m_xboxController = 
     new XboxController(DrivetrainConfig.XBOX_PORT);
 
@@ -93,7 +98,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double turn = m_xboxController.getX(GenericHID.Hand.kLeft);
+    // double turn = m_xboxController.getX(GenericHID.Hand.kLeft);
     double forward = m_xboxController.getY(GenericHID.Hand.kRight);
 
     // testing code
@@ -101,11 +106,19 @@ public class Robot extends TimedRobot {
     m_Drivetrain.directDriveLeft(forward);
     m_Drivetrain.directDriveRight(forward);
 
-    // test curvaturedrive
+    // TODO: test curvaturedrive
     // m_DriveTrain.CurvatureDrive(forward, turn);
 
-    // ONLY USE WHEN READY!!!
+    // TODO: add CurvatureDrive2, ONLY USE WHEN READY!
     // m_Drivetrain.CurvatureDrive2(forward, turn);
+
+    // TODO: add turret subsystem
+
+    // TODO: add conveyor subsystem
+
+    // TODO: add intake subsystem
+
+    // TODO: add pneumatic management
   }
 
   /** This function is called once when the robot is disabled. */
